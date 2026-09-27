@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C.A.R.E. - Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+    <header class="bg-slate-800 border-b border-slate-700 px-6 py-4 flex justify-between items-center shadow-md">
+        <span class="text-xl font-bold tracking-wide text-blue-400">C.A.R.E. Admin Portal</span>
+        <div class="flex items-center space-x-4">
+            <span class="text-sm text-slate-300">Logged in as: <strong class="text-white">{{ username }}</strong></span>
+            <a href="/logout" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">Sign Out</a>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-6xl w-full mx-auto p-6 space-y-6">
+        <div class="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl">
+            <h1 class="text-2xl font-semibold mb-2">Fleet Logistics & Maintenance Hub</h1>
+            <p class="text-slate-400 text-sm">Monitor active drivers, review maintenance issues, handle live Telnyx dispatch, and log vehicle service records.</p>
+        </div>
+
+        <!-- Metrics Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl">
+                <h2 class="text-sm font-medium text-slate-400 uppercase tracking-wider mb-2">Active Shuttles</h2>
+                <p class="text-3xl font-bold text-blue-400">{{ drivers | length }}</p>
+            </div>
+            <div class="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl">
+                <h2 class="text-sm font-medium text-slate-400 uppercase tracking-wider mb-2">Drivers On Duty</h2>
+                <p class="text-3xl font-bold text-green-400">{{ drivers | length }}</p>
+            </div>
+            <div class="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl">
+                <h2 class="text-sm font-medium text-slate-400 uppercase tracking-wider mb-2">Maintenance Issues</h2>
+                <p class="text-3xl font-bold text-amber-400">{{ maintenance_records | length }}</p>
+            </div>
+        </div>
+
+        <!-- Dynamic Data Lists Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Drivers On Duty List -->
+            <div class="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl space-y-4">
+                <h2 class="text-lg font-medium text-green-400">Drivers On Duty</h2>
+                <div class="space-y-2">
+                    {% for driver in drivers %}
+                    <div class="bg-slate-900 border border-slate-700 p-3 rounded-lg flex justify-between items-center text-sm">
+                        <div>
+                            <strong class="text-white">{{ driver.name }}</strong>
+                            <p class="text-xs text-slate-400">Phone: {{ driver.phone }}</p>
+                        </div>
+                        <span class="px-2 py-1 bg-green-900/60 text-green-300 rounded text-xs">{{ driver.status }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Maintenance Issues List -->
+            <div class="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl space-y-4">
+                <h2 class="text-lg font-medium text-amber-400">Active Maintenance Records</h2>
+                <div class="space-y-2 max-h-48 overflow-y-auto">
+                    {% for rec in maintenance_records %}
+                    <div class="bg-slate-900 border border-slate-700 p-3 rounded-lg text-sm">
+                        <strong class="text-amber-300">{{ rec.shuttle_id }}</strong>
+                        <p class="text-xs text-slate-300 mt-1">{{ rec.service_note }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Forms Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Telnyx SMS Dispatch Box -->
+            <div class="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl space-y-4">
+                <h2 class="text-lg font-medium text-blue-400">Send Live Telnyx SMS Dispatch</h2>
+                <form action="/admin/send-sms" method="POST" class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Driver Phone (+1...):</label>
+                        <input type="text" name="phone" value="+1" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Message:</label>
+                        <textarea name="message" rows="2" required placeholder="Dispatch instructions..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white"></textarea>
+                    </div>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium">Send SMS</button>
+                </form>
+                {% if success %}
+                    <div class="p-3 bg-blue-900/50 border border-blue-700 rounded-lg text-blue-200 text-xs">{{ success }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Fleet Maintenance Log Box -->
+            <div class="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl space-y-4">
+                <h2 class="text-lg font-medium text-amber-400">Log Vehicle Maintenance</h2>
+                <form action="/admin/maintenance" method="POST" class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Shuttle ID / Name:</label>
+                        <input type="text" name="shuttle_id" required placeholder="e.g., Shuttle Van #03" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Maintenance Notes / Service:</label>
+                        <input type="text" name="service_note" required placeholder="e.g., Oil change & brake check" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
+                    </div>
+                    <button type="submit" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg text-sm font-medium">Record Maintenance</button>
+                </form>
+                {% if maintenance_success %}
+                    <div class="p-3 bg-amber-900/50 border border-amber-700 rounded-lg text-amber-200 text-xs">{{ maintenance_success }}</div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</body>
+</html>

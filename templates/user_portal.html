@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C.A.R.E. - Passenger Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+    <header class="bg-slate-800 border-b border-slate-700 px-6 py-4 flex justify-between items-center shadow-md">
+        <span class="text-xl font-bold tracking-wide text-blue-400">C.A.R.E. Passenger Portal</span>
+        <div class="flex items-center space-x-4">
+            <span class="text-sm text-slate-300">Logged in as: <strong class="text-white">{{ username }}</strong></span>
+            <a href="/logout" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">Sign Out</a>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-4xl w-full mx-auto p-6 space-y-6">
+        <div class="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl">
+            <h1 class="text-2xl font-semibold mb-2">Request a Shuttle Ride</h1>
+            <p class="text-slate-400 text-sm mb-6">Enter your pickup and drop-off locations to dispatch a campus shuttle.</p>
+            
+            <form action="/user/request-ride" method="POST" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Pickup Location:</label>
+                    <input type="text" name="pickup" required placeholder="e.g., Student Center" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 uppercase mb-1">Dropoff Destination:</label>
+                    <input type="text" name="dropoff" required placeholder="e.g., Science & Tech Building" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+                </div>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition shadow">Submit Ride Request</button>
+            </form>
+            {% if success %}
+                <div class="mt-4 p-4 bg-green-900/50 border border-green-700 rounded-lg text-green-200 text-sm">
+                    {{ success }}
+                </div>
+            {% endif %}
+        </div>
+    </main>
+</body>
+</html>
